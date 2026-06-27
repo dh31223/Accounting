@@ -112,9 +112,7 @@ class TransactionDialog(QDialog):
 
         # 分类
         self._category_combo = QComboBox()
-        self._category_combo.setEditable(True)
-        self._category_combo.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
-        self._category_combo.setMaxVisibleItems(8)
+        self._category_combo.setMaxVisibleItems(10)
         form.addRow("分类:", self._category_combo)
 
         # 属性
@@ -127,8 +125,7 @@ class TransactionDialog(QDialog):
 
         # 账户
         self._account_combo = QComboBox()
-        self._account_combo.setEditable(True)
-        self._account_combo.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+        self._account_combo.setMaxVisibleItems(8)
         self._account_combo.setMaxVisibleItems(8)
         form.addRow("账户:", self._account_combo)
 
