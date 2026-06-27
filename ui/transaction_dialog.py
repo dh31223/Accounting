@@ -55,8 +55,9 @@ class TransactionDialog(QDialog):
         """构建对话框 UI。"""
         title = "编辑交易" if self._txn else "添加交易"
         self.setWindowTitle(title)
-        self.setMinimumWidth(440)
+        self.setMinimumWidth(460)
         self.setModal(True)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
 
         layout = QVBoxLayout(self)
@@ -113,10 +114,12 @@ class TransactionDialog(QDialog):
         self._category_combo = QComboBox()
         self._category_combo.setEditable(True)
         self._category_combo.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+        self._category_combo.setMaxVisibleItems(8)
         form.addRow("分类:", self._category_combo)
 
         # 属性
         self._attr_combo = QComboBox()
+        self._attr_combo.setMaxVisibleItems(8)
         for key, label in ATTRIBUTES.items():
             self._attr_combo.addItem(label, key)
         self._attr_combo.setCurrentIndex(2)  # 默认"刚需"
@@ -126,6 +129,7 @@ class TransactionDialog(QDialog):
         self._account_combo = QComboBox()
         self._account_combo.setEditable(True)
         self._account_combo.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+        self._account_combo.setMaxVisibleItems(8)
         form.addRow("账户:", self._account_combo)
 
         # 备注

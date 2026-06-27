@@ -110,6 +110,7 @@ class TransactionPanel(QWidget):
         self._add_filter_label(row2, "类型")
         self._type_filter = QComboBox()
         self._type_filter.setMinimumWidth(100)
+        self._type_filter.setMaxVisibleItems(10)
         self._type_filter.addItem("全部", None)
         self._type_filter.addItem("💰 收入", "income")
         self._type_filter.addItem("💸 支出", "expense")
@@ -119,18 +120,21 @@ class TransactionPanel(QWidget):
         self._add_filter_label(row2, "分类")
         self._category_filter = QComboBox()
         self._category_filter.setMinimumWidth(120)
+        self._category_filter.setMaxVisibleItems(10)
         row2.addWidget(self._category_filter)
 
         # 账户筛选
         self._add_filter_label(row2, "账户")
         self._account_filter = QComboBox()
         self._account_filter.setMinimumWidth(100)
+        self._account_filter.setMaxVisibleItems(10)
         row2.addWidget(self._account_filter)
 
         # 属性筛选
         self._add_filter_label(row2, "属性")
         self._attr_filter = QComboBox()
         self._attr_filter.setMinimumWidth(110)
+        self._attr_filter.setMaxVisibleItems(10)
         self._attr_filter.addItem("全部", None)
         for key, label in ATTRIBUTE_LABELS.items():
             self._attr_filter.addItem(label, key)
@@ -392,10 +396,20 @@ class TransactionPanel(QWidget):
 
     def _on_add(self):
         """打开添加交易对话框。"""
-        dlg = TransactionDialog(self)
-        if dlg.exec() == TransactionDialog.DialogCode.Accepted:
-            self.refresh()
-            self.status_message.emit("交易已添加")
+        try:
+            dlg = TransactionDialog(self)
+            # 确保对话框在父窗口范围内显示
+            dlg.adjustSize()
+            if self.window():
+                parent_geo = self.window().frameGeometry()
+                dlg_geo = dlg.frameGeometry()
+                dlg_geo.moveCenter(parent_geo.center())
+                dlg.move(dlg_geo.topLeft())
+            if dlg.exec() == TransactionDialog.DialogCode.Accepted:
+                self.refresh()
+                self.status_message.emit("交易已添加")
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"无法打开对话框: {e}")
 
     def _on_item_double_clicked(self, item: QTreeWidgetItem, column: int):
         """双击编辑交易。"""
@@ -430,15 +444,24 @@ class TransactionPanel(QWidget):
 
     def _edit_transaction(self, txn_id: int):
         """编辑交易。"""
-        txn = TransactionService.get_by_id(txn_id)
-        if not txn:
-            QMessageBox.warning(self, "错误", "交易记录不存在")
-            return
+        try:
+            txn = TransactionService.get_by_id(txn_id)
+            if not txn:
+                QMessageBox.warning(self, "错误", "交易记录不存在")
+                return
 
-        dlg = TransactionDialog(self, transaction=txn)
-        if dlg.exec() == TransactionDialog.DialogCode.Accepted:
-            self.refresh()
-            self.status_message.emit("交易已更新")
+            dlg = TransactionDialog(self, transaction=txn)
+            dlg.adjustSize()
+            if self.window():
+                parent_geo = self.window().frameGeometry()
+                dlg_geo = dlg.frameGeometry()
+                dlg_geo.moveCenter(parent_geo.center())
+                dlg.move(dlg_geo.topLeft())
+            if dlg.exec() == TransactionDialog.DialogCode.Accepted:
+                self.refresh()
+                self.status_message.emit("交易已更新")
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"操作失败: {e}")
 
     def _delete_transaction(self, txn_id: int):
         """删除交易（含确认）。"""
