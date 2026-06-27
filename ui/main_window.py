@@ -17,6 +17,8 @@ from ui.transaction_panel import TransactionPanel
 from ui.dashboard import DashboardPage
 from ui.budget_panel import BudgetPanel
 from ui.reminder_panel import ReminderPanel
+from ui.template_panel import TemplatePanel
+from ui.settings_dialog import SettingsPage
 
 
 # 导航项定义
@@ -74,8 +76,8 @@ class MainWindow(QMainWindow):
         self._dashboard_page = DashboardPage()
         self._budget_page = BudgetPanel()
         self._reminders_page = ReminderPanel()
-        self._templates_page = self._placeholder_page("📋 交易模板", "将在阶段 7 实现")
-        self._settings_page = self._placeholder_page("⚙️ 设置", "将在阶段 7 实现")
+        self._templates_page = TemplatePanel()
+        self._settings_page = SettingsPage()
 
         self._stack.addWidget(self._transaction_panel)   # index 0
         self._stack.addWidget(self._dashboard_page)      # index 1
