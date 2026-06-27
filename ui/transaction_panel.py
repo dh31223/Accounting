@@ -77,7 +77,7 @@ class TransactionPanel(QWidget):
         filter_layout.setContentsMargins(16, 10, 16, 10)
         filter_layout.setSpacing(10)
 
-        filter_layout.addWidget(QLabel("从:"))
+        self._add_filter_label(filter_layout, "从")
 
         self._date_from = QDateEdit()
         self._date_from.setCalendarPopup(True)
@@ -85,7 +85,7 @@ class TransactionPanel(QWidget):
         self._date_from.setDisplayFormat("yyyy-MM-dd")
         filter_layout.addWidget(self._date_from)
 
-        filter_layout.addWidget(QLabel("至:"))
+        self._add_filter_label(filter_layout, "至")
 
         self._date_to = QDateEdit()
         self._date_to.setCalendarPopup(True)
@@ -94,27 +94,28 @@ class TransactionPanel(QWidget):
         filter_layout.addWidget(self._date_to)
 
         # 类型筛选
-        filter_layout.addWidget(QLabel("类型:"))
+        self._add_filter_label(filter_layout, "类型")
         self._type_filter = QComboBox()
+        self._type_filter.setMinimumWidth(90)
         self._type_filter.addItem("全部", None)
         self._type_filter.addItem("💰 收入", "income")
         self._type_filter.addItem("💸 支出", "expense")
         filter_layout.addWidget(self._type_filter)
 
         # 分类筛选
-        filter_layout.addWidget(QLabel("分类:"))
+        self._add_filter_label(filter_layout, "分类")
         self._category_filter = QComboBox()
-        self._category_filter.setMinimumWidth(80)
+        self._category_filter.setMinimumWidth(90)
         filter_layout.addWidget(self._category_filter)
 
         # 账户筛选
-        filter_layout.addWidget(QLabel("账户:"))
+        self._add_filter_label(filter_layout, "账户")
         self._account_filter = QComboBox()
         self._account_filter.setMinimumWidth(80)
         filter_layout.addWidget(self._account_filter)
 
         # 属性筛选
-        filter_layout.addWidget(QLabel("属性:"))
+        self._add_filter_label(filter_layout, "属性")
         self._attr_filter = QComboBox()
         self._attr_filter.addItem("全部", None)
         for key, label in ATTRIBUTE_LABELS.items():
@@ -165,6 +166,15 @@ class TransactionPanel(QWidget):
         add_btn.setShortcut("Ctrl+N")
         fab_layout.addWidget(add_btn)
         layout.addLayout(fab_layout)
+
+    def _add_filter_label(self, layout: QHBoxLayout, text: str):
+        """添加筛选栏标签（无背景无边框）。"""
+        label = QLabel(f"{text}:")
+        label.setStyleSheet(
+            "background: transparent; color: #94a3b8; font-size: 13px; "
+            "border: none; padding: 0px; margin: 0px;"
+        )
+        layout.addWidget(label)
 
     # ---- 筛选数据加载 ----
 
