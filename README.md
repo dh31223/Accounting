@@ -6,8 +6,8 @@
 
 | 技术 | 用途 |
 |------|------|
-| Python 3.13+ | 开发语言 |
-| PyQt6 | 图形界面（深色主题） |
+| Python 3.12+ | 开发语言 |
+| PyQt6 (系统包) | 图形界面（深色主题） |
 | SQLite | 本地数据库 |
 | matplotlib | 统计图表 |
 | openpyxl | Excel 导出 |
@@ -107,11 +107,14 @@ Accounting/
 ## 快速开始
 
 ```bash
-# 1. 创建虚拟环境并安装依赖
-uv venv
-uv pip install --index-url https://pypi.tuna.tsinghua.edu.cn/simple pyqt6 matplotlib openpyxl httpx
+# 1. 安装系统依赖（PyQt6 + fcitx 中文输入法插件使用同一 Qt 6.4 ABI）
+sudo apt-get install -y python3-pyqt6 python3-pyqt6.qtcharts \
+    python3-matplotlib python3-openpyxl python3-httpx
 
-# 2. 运行
+# 2. 创建虚拟环境（需访问系统包）
+uv venv --system-site-packages
+
+# 3. 运行
 uv run python main.py
 
 # 首次运行会自动创建 accounting.db 并插入预设分类
