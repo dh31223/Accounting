@@ -22,3 +22,6 @@ backups/
 
 # Playwright
 .playwright-mcp/
+
+# Claude session
+.claude/
