@@ -1,0 +1,12 @@
+[project]
+name = "accounting"
+version = "0.1.0"
+description = "个人记账软件 — 支持收支记录、统计分析、预算管理、账单提醒"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "PyQt6>=6.8.0",
+    "matplotlib>=3.10.0",
+    "openpyxl>=3.1.0",
+    "httpx>=0.28.0",
+]
