@@ -21,10 +21,19 @@ Accounting/
 ├── db/
 │   ├── connection.py        # SQLite 连接管理 (WAL + 外键)
 │   └── schema.py            # 建表 + 预设分类初始化
-├── core/                    # 业务逻辑层（阶段 2）
+├── core/
+│   ├── models.py            # 数据模型 (Transaction/Budget/Reminder/Template)
+│   ├── transaction.py       # 交易 CRUD 服务
+│   ├── statistics.py        # 统计引擎 (日/周/月/年聚合)
+│   ├── budget.py            # 预算管理 + 超支检测
+│   ├── reminder.py          # 账单提醒 + 到期检测
+│   ├── template.py          # 交易模板 + 一键录入
+│   ├── export.py            # Excel 导出 (openpyxl)
+│   └── backup.py            # 数据库备份/还原
 ├── ui/                      # PyQt 界面层（阶段 4+）
 ├── assets/icons/            # 图标资源
 ├── design/                  # UI 设计原型
+├── test_phase2.py           # 阶段 2 单元测试
 ├── SPEC.md                  # 完整需求规格书 (gitignored)
 └── accounting.db            # 数据库文件 (gitignored)
 ```
@@ -101,13 +110,48 @@ uv run python main.py
 | 阶段 | 状态 | 内容 |
 |------|------|------|
 | 1 | ✅ 完成 | 项目初始化 + 数据库设计 |
-| 2 | ⬜ 待做 | 核心业务逻辑层 |
+| 2 | ✅ 完成 | 核心业务逻辑层 (7 个 Service) |
 | 3 | ⬜ 待做 | UI 界面原型（HTML） |
 | 4 | ⬜ 待做 | PyQt 主窗口 + 交易管理 |
 | 5 | ⬜ 待做 | 统计仪表盘 |
 | 6 | ⬜ 待做 | 预算 + 账单提醒 |
 | 7 | ⬜ 待做 | 模板 + 导出 + 备份 |
 | 8 | ⬜ 待做 | AI 预算建议（可选） |
+
+## Core API 快速参考
+
+```python
+# 交易 CRUD
+from core.transaction import add_transaction, list_transactions, update_transaction, delete_transaction
+txn = add_transaction("2025-06-27", "expense", 35.5, "餐饮", "necessity", "午饭", "支付宝")
+records = list_transactions(date_from="2025-06-01", date_to="2025-06-30", txn_type="expense")
+
+# 统计分析
+from core.statistics import StatisticsService, current_month_range
+summary = StatisticsService.summary_by_period("2025-06-01", "2025-06-30")
+trend = StatisticsService.spending_trend("2025-06-01", "2025-06-30", "daily")
+cats = StatisticsService.category_breakdown("2025-06-01", "2025-06-30", "expense")
+
+# 预算
+from core.budget import BudgetService
+BudgetService.set_budget(None, 5000, "2025-06")  # 总预算
+BudgetService.set_budget("餐饮", 2000, "2025-06")  # 分类预算
+overspent = BudgetService.check_overspend("2025-06")
+
+# 账单提醒
+from core.reminder import ReminderService
+due = ReminderService.get_due_soon(days_ahead=7)
+
+# 模板
+from core.template import TemplateService
+txn = TemplateService.apply_template(template_id, "2025-06-27")
+
+# 导出 & 备份
+from core.export import ExportService
+ExportService.export_transactions("output.xlsx", "2025-01-01", "2025-06-30")
+from core.backup import BackupService
+BackupService.backup()
+```
 
 ## 属性标签
 

@@ -13,3 +13,4 @@ wheels/
 SPEC.md
 accounting.db
 *.db
+backups/
