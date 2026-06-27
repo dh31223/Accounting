@@ -267,24 +267,33 @@ class DashboardPage(QWidget):
             ax.set_xticks([])
             ax.set_yticks([])
         else:
+            # 数据点多时降采样，避免卡死
+            n = len(data)
+            step = max(1, n // 30)  # 最多显示 ~30 个标签
+            use_markers = n <= 60   # 超过 60 个点不画 marker
+
             labels = [d["label"] for d in data]
-            # 短标签
             short_labels = self._shorten_labels(labels, granularity)
             expenses = [d["expense"] for d in data]
             incomes = [d["income"] for d in data]
-            x = range(len(labels))
+            x = range(n)
 
-            ax.plot(x, expenses, color=PLOT_EXPENSE, linewidth=2, marker="o",
-                    markersize=5, label="支出")
-            ax.plot(x, incomes, color=PLOT_INCOME, linewidth=2, marker="o",
-                    markersize=5, label="收入")
+            mk = "o" if use_markers else ""
+            ms = 5 if use_markers else 0
 
-            # 填充区域
+            ax.plot(x, expenses, color=PLOT_EXPENSE, linewidth=1.5, marker=mk,
+                    markersize=ms, label="支出")
+            ax.plot(x, incomes, color=PLOT_INCOME, linewidth=1.5, marker=mk,
+                    markersize=ms, label="收入")
+
             ax.fill_between(x, expenses, alpha=0.08, color=PLOT_EXPENSE)
             ax.fill_between(x, incomes, alpha=0.08, color=PLOT_INCOME)
 
-            ax.set_xticks(x)
-            ax.set_xticklabels(short_labels, fontsize=9, color=PLOT_TEXT)
+            # 每隔 step 个点显示一个标签
+            tick_positions = list(range(0, n, step))
+            tick_labels = [short_labels[i] for i in tick_positions]
+            ax.set_xticks(tick_positions)
+            ax.set_xticklabels(tick_labels, fontsize=9, color=PLOT_TEXT)
             ax.tick_params(axis="y", colors=PLOT_TEXT, labelsize=9)
             ax.legend(loc="upper right", facecolor=PLOT_BG, edgecolor="none",
                      labelcolor=PLOT_TEXT, fontsize=9)
