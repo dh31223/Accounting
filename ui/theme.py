@@ -40,7 +40,7 @@ def get_stylesheet() -> str:
 QWidget {{
     background-color: {COLOR_BG};
     color: {COLOR_TEXT};
-    font-family: "Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", sans-serif;
+    font-family: "Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", "Noto Color Emoji", sans-serif;
     font-size: 14px;
 }}
 
