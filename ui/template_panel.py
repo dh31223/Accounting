@@ -202,6 +202,7 @@ class TemplateDialog(QDialog):
         self.setMinimumWidth(420)
         self.setModal(True)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
 
         layout = QVBoxLayout(self)
         layout.setSpacing(16)

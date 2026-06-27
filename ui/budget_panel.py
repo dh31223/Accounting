@@ -282,6 +282,7 @@ class BudgetDialog(QDialog):
         self.setMinimumWidth(380)
         self.setModal(True)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
 
         layout = QVBoxLayout(self)
         layout.setSpacing(16)
