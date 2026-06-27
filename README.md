@@ -42,10 +42,7 @@ Accounting/
 │   ├── template_panel.py    # 交易模板（列表 + 一键录入 + CRUD）
 │   ├── settings_dialog.py   # 设置（Excel 导出 + 备份/还原）
 │   └── ai_panel.py          # AI 预算建议（DeepSeek 集成）
-├── design/
-│   └── prototype.html       # 高保真 UI 设计原型
-├── test_phase2.py           # 阶段 2 功能测试
-├── test_qa_strict.py        # 阶段 2 QA 严格测试（55 项）
+├── design/                  # UI 设计参考 (gitignored)
 ├── SPEC.md                  # 完整需求规格书 (gitignored)
 └── accounting.db            # 数据库文件 (gitignored)
 ```

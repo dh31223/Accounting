@@ -25,3 +25,9 @@ backups/
 
 # Claude session
 .claude/
+
+# Design prototypes
+design/
+
+# Test scripts
+test_*.py
