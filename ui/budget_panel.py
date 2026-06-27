@@ -56,6 +56,7 @@ class BudgetPanel(QWidget):
         self._add_label(header, "月份")
         self._month_combo = QComboBox()
         self._month_combo.setMinimumWidth(120)
+        self._month_combo.setMaxVisibleItems(10)
         self._populate_months()
         self._month_combo.currentTextChanged.connect(self.refresh)
         header.addWidget(self._month_combo)

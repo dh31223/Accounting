@@ -237,6 +237,7 @@ class ReminderDialog(QDialog):
         form.addRow("到期日:", self._date_edit)
 
         self._repeat_combo = QComboBox()
+        self._repeat_combo.setMaxVisibleItems(4)
         for key, label in REPEAT_LABELS.items():
             self._repeat_combo.addItem(label, key)
         form.addRow("重复:", self._repeat_combo)
