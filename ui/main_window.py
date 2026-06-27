@@ -146,7 +146,7 @@ class MainWindow(QMainWindow):
         layout.addStretch()
 
         # 底部版本号
-        version_label = QLabel("v1.0.0 · Phase 4")
+        version_label = QLabel("v1.0.0")
         version_label.setObjectName("subtitle")
         version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(version_label)
