@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accounting — UI 设计原型</title>
+<style>
+/* ========================================
+   Design System — 深邃蓝紫调深色主题
+   ========================================
+   Backgrounds: #0f0f23 (deepest), #1a1a2e (base), #1e1e36 (card), #252540 (input)
+   Accent:      #818cf8 (primary indigo), #a78bfa (secondary purple)
+   Text:        #e2e8f0 (primary), #94a3b8 (secondary), #64748b (muted)
+   Semantic:    #34d399 (income), #f87171 (expense), #fbbf24 (warning), #f472b6 (joy)
+   Border:      #2d2d4a
+   Radius:      8px (sm), 12px (md), 16px (lg)
+   Font:        system-ui, PingFang SC, Microsoft YaHei, sans-serif
+   Shadow:      0 4px 24px rgba(0,0,0,0.3)
+*/
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #0f0f23;
+  --bg-base: #1a1a2e;
+  --bg-card: #1e1e36;
+  --bg-input: #252540;
+  --bg-hover: #2a2a44;
+  --border: #2d2d4a;
+  --border-light: #38385a;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #818cf8;
+  --accent-light: #a5b4fc;
+  --accent-dark: #6366f1;
+  --purple: #a78bfa;
+  --green: #34d399;
+  --green-bg: rgba(52,211,153,0.12);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.12);
+  --amber: #fbbf24;
+  --amber-bg: rgba(251,191,36,0.12);
+  --pink: #f472b6;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+body {
+  font-family: system-ui, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ========================================
+   App Shell — 桌面应用模拟
+   ======================================== */
+.app-frame {
+  width: 1200px;
+  height: 780px;
+  margin: 40px auto;
+  background: var(--bg-base);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+  width: 200px;
+  background: var(--bg-deep);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-logo .icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.sidebar-logo .text {
+  font-size: 16px; font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 8px 12px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 13px;
+  font-weight: 500;
+  user-select: none;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+.nav-item.active { background: rgba(129,140,248,0.15); color: var(--accent); font-weight: 600; }
+
+.nav-item .nav-icon { font-size: 18px; width: 22px; text-align: center; flex-shrink: 0; }
+
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---- Main Content ---- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.page {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+.page.active { display: flex; }
+
+.page-header {
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.page-header h2 {
+  font-size: 20px; font-weight: 700; letter-spacing: 0.3px;
+}
+
+.page-header .subtitle {
+  font-size: 13px; color: var(--text-muted); margin-top: 2px;
+}
+
+.page-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 28px;
+}
+
+.page-body::-webkit-scrollbar { width: 6px; }
+.page-body::-webkit-scrollbar-track { background: transparent; }
+.page-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.page-body::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: none;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent-dark); }
+
+.btn-secondary {
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--bg-hover); border-color: var(--border-light); }
+
+.btn-danger {
+  background: var(--red-bg);
+  color: var(--red);
+}
+.btn-danger:hover { background: rgba(248,113,113,0.25); }
+
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-icon { padding: 6px; width: 32px; height: 32px; justify-content: center; border-radius: var(--radius-sm); }
+
+.btn-fab {
+  position: absolute;
+  bottom: 24px; right: 24px;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(129,140,248,0.4);
+  transition: all var(--transition);
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(129,140,248,0.5); }
+
+/* ---- Filter Bar ---- */
+.filter-bar {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  padding: 14px 0; align-items: center;
+}
+
+.filter-bar label {
+  font-size: 12px; color: var(--text-muted); margin-right: 4px;
+}
+
+.filter-group {
+  display: flex; align-items: center; gap: 6px;
+}
+
+.filter-input, .filter-select {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color var(--transition);
+}
+.filter-input:focus, .filter-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.filter-input { width: 120px; }
+.filter-select { min-width: 90px; }
+
+/* ---- Tree Widget ---- */
+.tree-wrap {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.tree-node { user-select: none; }
+
+.tree-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background var(--transition);
+  border-bottom: 1px solid rgba(45,45,74,0.3);
+  font-size: 13px;
+}
+.tree-row:hover { background: rgba(255,255,255,0.03); }
+.tree-row.no-hover { cursor: default; }
+.tree-row.no-hover:hover { background: transparent; }
+
+.tree-row .toggle {
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: var(--text-muted);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.tree-row .toggle.expanded { transform: rotate(90deg); }
+.tree-row .toggle.hidden { visibility: hidden; }
+
+.tree-row .tree-icon { font-size: 14px; flex-shrink: 0; width: 22px; text-align: center; }
+
+.tree-row .tree-label {
+  font-weight: 600; font-size: 13px; flex: 1;
+}
+.tree-row .tree-label.year { color: var(--accent-light); font-size: 15px; }
+.tree-row .tree-label.month { color: var(--purple); font-size: 14px; }
+.tree-row .tree-label.week { color: var(--text-primary); font-size: 13px; }
+
+.tree-row .tree-summary {
+  display: flex; gap: 16px; font-size: 12px; color: var(--text-muted);
+  margin-left: auto;
+}
+
+.tree-children { display: none; }
+.tree-children.open { display: block; }
+.tree-children .tree-row { padding-left: 40px; }
+.tree-children .tree-children .tree-row { padding-left: 60px; }
+.tree-children .tree-children .tree-children .tree-row { padding-left: 80px; }
+
+/* Day-level detail row looks like a mini table row */
+.tree-row.day {
+  padding: 8px 14px 8px 80px;
+  display: grid;
+  grid-template-columns: 90px 40px 90px 70px 120px 80px 1fr 60px;
+  gap: 4px;
+  font-size: 12px;
+  align-items: center;
+}
+
+.tree-row.day:hover { background: rgba(255,255,255,0.05); }
+
+.tree-row.day-header {
+  padding: 6px 14px 6px 60px;
+  background: rgba(129,140,248,0.06);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: grid;
+  grid-template-columns: 90px 40px 90px 70px 120px 80px 1fr 60px;
+  gap: 4px;
+  cursor: default;
+}
+
+.tree-row.day-header:hover { background: rgba(129,140,248,0.06); }
+
+.text-income { color: var(--green); font-weight: 600; }
+.text-expense { color: var(--red); font-weight: 600; }
+
+.badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.badge-worthy { background: rgba(52,211,153,0.15); color: var(--green); }
+.badge-joy { background: rgba(244,114,182,0.15); color: var(--pink); }
+.badge-necessity { background: rgba(148,163,184,0.15); color: var(--text-secondary); }
+.badge-waste { background: rgba(248,113,113,0.15); color: var(--red); }
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; }
+
+/* ---- Cards ---- */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+}
+
+.stat-card .label {
+  font-size: 12px; color: var(--text-muted); margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.stat-card .value {
+  font-size: 28px; font-weight: 700; letter-spacing: -0.5px;
+}
+.stat-card .value.income { color: var(--green); }
+.stat-card .value.expense { color: var(--red); }
+.stat-card .value.balance { color: var(--text-primary); }
+
+/* ---- Charts ---- */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.chart-card h3 {
+  font-size: 14px; font-weight: 600; margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+.chart-toggle {
+  display: flex; gap: 2px;
+  background: var(--bg-deep);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.chart-toggle button {
+  padding: 5px 14px;
+  border: none; background: none;
+  color: var(--text-muted);
+  font-size: 12px; font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: inherit;
+  transition: all var(--transition);
+}
+.chart-toggle button.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Placeholder chart */
+.placeholder-chart {
+  width: 100%; height: 200px;
+  display: flex; align-items: flex-end; gap: 3px;
+  padding: 8px 0;
+}
+
+.bar {
+  flex: 1;
+  background: var(--accent);
+  border-radius: 3px 3px 0 0;
+  min-height: 4px;
+  transition: height 0.3s;
+  opacity: 0.7;
+}
+.bar:nth-child(odd) { opacity: 1; }
+
+.pie-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  gap: 24px;
+  height: 180px;
+}
+
+.pie-circle {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--accent) 0% 35%,
+    var(--purple) 35% 55%,
+    var(--pink) 55% 72%,
+    var(--amber) 72% 85%,
+    var(--green) 85% 100%
+  );
+}
+
+.pie-legend {
+  display: flex; flex-direction: column; gap: 8px;
+  font-size: 12px;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ---- Progress bars ---- */
+.progress-bar {
+  width: 100%; height: 8px;
+  background: var(--bg-deep);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 0.5s;
+}
+
+.progress-fill.safe { background: var(--green); }
+.progress-fill.warning { background: var(--amber); }
+.progress-fill.danger { background: var(--red); }
+
+.budget-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(45,45,74,0.5);
+}
+
+.budget-row:last-child { border-bottom: none; }
+.budget-row .cat-name { width: 80px; font-weight: 500; font-size: 13px; }
+.budget-row .progress-wrap { flex: 1; }
+.budget-row .budget-info { font-size: 12px; color: var(--text-muted); width: 100px; text-align: right; }
+
+/* ---- Modal overlay ---- */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center; justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--bg-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px; font-weight: 500; color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color var(--transition);
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-textarea { min-height: 70px; resize: vertical; }
+
+.type-toggle {
+  display: flex; gap: 2px;
+  background: var(--bg-deep);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+}
+
+.type-toggle button {
+  flex: 1;
+  padding: 8px 16px;
+  border: none; background: none;
+  color: var(--text-muted);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: inherit;
+  transition: all var(--transition);
+}
+
+.type-toggle button.active-expense {
+  background: var(--red-bg); color: var(--red);
+}
+
+.type-toggle button.active-income {
+  background: var(--green-bg); color: var(--green);
+}
+
+.modal-actions {
+  display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px;
+}
+
+/* ---- Reminder / Template list ---- */
+.item-list {
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.item-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px;
+  transition: border-color var(--transition);
+}
+
+.item-card:hover { border-color: var(--border-light); }
+
+.item-card .item-icon {
+  width: 40px; height: 40px;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.item-card .item-info { flex: 1; min-width: 0; }
+.item-card .item-name { font-weight: 600; font-size: 14px; }
+.item-card .item-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.item-card .item-amount { font-weight: 700; font-size: 15px; }
+.item-card .item-amount.due { color: var(--amber); }
+.item-card .item-actions { display: flex; gap: 4px; }
+
+.overdue-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px; font-weight: 600;
+  background: var(--red-bg); color: var(--red);
+}
+
+/* ---- Notification toast (top-left) ---- */
+.notification-toast {
+  position: fixed; top: 20px; left: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--amber);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  box-shadow: var(--shadow);
+  z-index: 200;
+  display: none;
+  max-width: 320px;
+  animation: slideIn 0.3s ease;
+}
+
+.notification-toast.show { display: block; }
+
+.notification-toast .toast-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+.notification-toast .toast-body { font-size: 12px; color: var(--text-secondary); }
+.notification-toast .toast-close {
+  position: absolute; top: 8px; right: 10px;
+  background: none; border: none; color: var(--text-muted);
+  cursor: pointer; font-size: 16px;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ---- Settings ---- */
+.settings-section {
+  margin-bottom: 24px;
+}
+
+.settings-section h3 {
+  font-size: 15px; font-weight: 600; margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0;
+}
+
+.settings-row .setting-label { font-size: 13px; }
+.settings-row .setting-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* ---- Prototype controls ---- */
+.proto-badge {
+  position: fixed;
+  top: 12px; right: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11px; color: var(--text-muted);
+  z-index: 300;
+  pointer-events: none;
+}
+
+</style>
+</head>
+<body>
+
+<div class="proto-badge">📐 UI 原型 — 点击侧边栏切换页面</div>
+
+<!-- Notification Toast -->
+<div class="notification-toast" id="toast">
+  <button class="toast-close" onclick="this.parentElement.classList.remove('show')">&times;</button>
+  <div class="toast-title">📅 账单提醒</div>
+  <div class="toast-body">「房租」将于 3 天后到期 (¥3,000)</div>
+</div>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-title">添加交易记录</h3>
+    <form onsubmit="event.preventDefault(); closeModal();">
+      <div class="form-group">
+        <label>类型</label>
+        <div class="type-toggle" id="typeToggle">
+          <button type="button" class="active-expense" onclick="switchType(this,'expense')">📤 支出</button>
+          <button type="button" onclick="switchType(this,'income')">📥 收入</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>日期</label>
+          <input type="date" class="form-input" value="2026-06-27">
+        </div>
+        <div class="form-group">
+          <label>金额</label>
+          <input type="number" class="form-input" placeholder="0.00" step="0.01" min="0.01">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>分类</label>
+          <select class="form-select">
+            <option>餐饮</option><option>交通</option><option>购物</option>
+            <option>住房</option><option>娱乐</option><option>医疗</option>
+            <option>发红包</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>账户</label>
+          <select class="form-select">
+            <option>支付宝</option><option>微信</option>
+            <option>银行卡</option><option>现金</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>属性</label>
+        <select class="form-select">
+          <option>💚 值得</option><option>💛 悦己</option>
+          <option>📋 刚需</option><option>🚫 浪费</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <textarea class="form-textarea" placeholder="添加备注..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+        <button type="submit" class="btn btn-primary">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- App Shell -->
+<div class="app-frame">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="icon">📒</div>
+      <span class="text">记账</span>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <button class="nav-item active" data-page="transactions">
+        <span class="nav-icon">📋</span> 交易记录
+      </button>
+      <button class="nav-item" data-page="dashboard">
+        <span class="nav-icon">📊</span> 统计分析
+      </button>
+      <button class="nav-item" data-page="budget">
+        <span class="nav-icon">🎯</span> 预算管理
+      </button>
+      <button class="nav-item" data-page="reminders">
+        <span class="nav-icon">🔔</span> 账单提醒
+      </button>
+      <button class="nav-item" data-page="templates">
+        <span class="nav-icon">⚡</span> 快捷模板
+      </button>
+      <button class="nav-item" data-page="settings">
+        <span class="nav-icon">⚙️</span> 设置
+      </button>
+    </nav>
+    <div class="sidebar-footer">Accounting v0.1.0</div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ====== 1. 交易记录 ====== -->
+    <div class="page active" id="page-transactions">
+      <div class="page-header">
+        <h2>交易记录</h2>
+        <p class="subtitle">管理和筛选你的所有收支记录</p>
+      </div>
+      <div class="page-body" style="position:relative">
+        <div class="filter-bar">
+          <div class="filter-group">
+            <label>从</label>
+            <input type="date" class="filter-input" value="2026-06-01">
+          </div>
+          <div class="filter-group">
+            <label>至</label>
+            <input type="date" class="filter-input" value="2026-06-27">
+          </div>
+          <div class="filter-group">
+            <label>分类</label>
+            <select class="filter-select">
+              <option>全部</option>
+              <option>餐饮</option><option>交通</option><option>购物</option>
+              <option>住房</option><option>娱乐</option><option>医疗</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>账户</label>
+            <select class="filter-select">
+              <option>全部</option>
+              <option>支付宝</option><option>微信</option>
+              <option>银行卡</option><option>现金</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>属性</label>
+            <select class="filter-select">
+              <option>全部</option>
+              <option>💚 值得</option><option>💛 悦己</option>
+              <option>📋 刚需</option><option>🚫 浪费</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-sm" style="margin-left:auto">🔍 筛选</button>
+        </div>
+
+        <div class="tree-wrap">
+          <!-- ===== 2026年 ===== -->
+          <div class="tree-node">
+            <div class="tree-row" onclick="toggleTree(this)">
+              <span class="toggle expanded">▶</span>
+              <span class="tree-icon">📅</span>
+              <span class="tree-label year">2026年</span>
+              <span class="tree-summary">
+                <span style="color:var(--green)">收入 ¥38,500</span>
+                <span style="color:var(--red)">支出 ¥24,820</span>
+                <span>结余 ¥13,680</span>
+              </span>
+            </div>
+            <div class="tree-children open">
+              <!-- ===== 6月 ===== -->
+              <div class="tree-node">
+                <div class="tree-row" onclick="toggleTree(this)">
+                  <span class="toggle expanded">▶</span>
+                  <span class="tree-icon">📆</span>
+                  <span class="tree-label month">6月</span>
+                  <span class="tree-summary">
+                    <span style="color:var(--green)">收入 ¥9,500</span>
+                    <span style="color:var(--red)">支出 ¥5,280</span>
+                    <span>结余 ¥4,220</span>
+                  </span>
+                </div>
+                <div class="tree-children open">
+                  <!-- ==== 第26周 ==== -->
+                  <div class="tree-node">
+                    <div class="tree-row" onclick="toggleTree(this)">
+                      <span class="toggle expanded">▶</span>
+                      <span class="tree-icon">📋</span>
+                      <span class="tree-label week">第26周 (6/22 — 6/28)</span>
+                      <span class="tree-summary">
+                        <span style="color:var(--green)">¥8,500</span>
+                        <span style="color:var(--red)">¥635</span>
+                      </span>
+                    </div>
+                    <div class="tree-children open">
+                      <!-- day header -->
+                      <div class="tree-row day-header">
+                        <span>日期</span><span>类型</span><span>金额</span>
+                        <span>分类</span><span>属性</span><span>账户</span>
+                        <span>备注</span><span></span>
+                      </div>
+                      <!-- 6/27 -->
+                      <div class="tree-row day">
+                        <span>6月27日</span>
+                        <span class="text-expense">支出</span>
+                        <span class="text-expense">-¥35.50</span>
+                        <span>餐饮</span>
+                        <span class="badge badge-necessity">📋刚需</span>
+                        <span>支付宝</span>
+                        <span style="color:var(--text-muted);overflow:hidden;text-overflow:ellipsis">午饭外卖</span>
+                        <span style="display:flex;gap:2px">
+                          <button class="btn btn-secondary btn-sm" style="padding:2px 6px;font-size:11px" onclick="event.stopPropagation();openModal('edit')">✏️</button>
+                          <button class="btn btn-danger btn-sm" style="padding:2px 6px;font-size:11px">🗑</button>
+                        </span>
+                      </div>
+                      <!-- 6/26 -->
+                      <div class="tree-row day">
+                        <span>6月26日</span>
+                        <span class="text-income">收入</span>
+                        <span class="text-income">+¥8,000</span>
+                        <span>工资</span>
+                        <span class="badge badge-worthy">💚值得</span>
+                        <span>银行卡</span>
+                        <span style="color:var(--text-muted)">六月工资</span>
+                        <span style="display:flex;gap:2px">
+                          <button class="btn btn-secondary btn-sm" style="padding:2px 6px;font-size:11px">✏️</button>
+                          <button class="btn btn-danger btn-sm" style="padding:2px 6px;font-size:11px">🗑</button>
+                        </span>
+                      </div>
+                      <!-- 6/25 -->
+                      <div class="tree-row day">
+                        <span>6月25日</span>
+                        <span class="text-expense">支出</span>
+                        <span class="text-expense">-¥200</span>
+                        <span>购物</span>
+                        <span class="badge badge-joy">💛悦己</span>
+                        <span>微信</span>
+                        <span style="color:var(--text-muted)">新键盘</span>
+                        <span style="display:flex;gap:2px">
+                          <button class="btn btn-secondary btn-sm" style="padding:2px 6px;font-size:11px">✏️</button>
+                          <button class="btn btn-danger btn-sm" style="padding:2px 6px;font-size:11px">🗑</button>
+                        </span>
+                      </div>
+                      <!-- 6/24 -->
+                      <div class="tree-row day">
+                        <span>6月24日</span>
+                        <span class="text-expense">支出</span>
+                        <span class="text-expense">-¥150</span>
+                        <span>交通</span>
+                        <span class="badge badge-necessity">📋刚需</span>
+                        <span>支付宝</span>
+                        <span style="color:var(--text-muted)">地铁月卡</span>
+                        <span style="display:flex;gap:2px">
+                          <button class="btn btn-secondary btn-sm" style="padding:2px 6px;font-size:11px">✏️</button>
+                          <button class="btn btn-danger btn-sm" style="padding:2px 6px;font-size:11px">🗑</button>
+                        </span>
+                      </div>
+                    </div>
+                  </div><!-- /26周 -->
+                  <!-- ==== 第25周 ==== -->
+                  <div class="tree-node">
+                    <div class="tree-row" onclick="toggleTree(this)">
+                      <span class="toggle">▶</span>
+                      <span class="tree-icon">📋</span>
+                      <span class="tree-label week">第25周 (6/15 — 6/21)</span>
+                      <span class="tree-summary">
+                        <span style="color:var(--green)">¥0</span>
+                        <span style="color:var(--red)">¥3,520</span>
+                      </span>
+                    </div>
+                    <div class="tree-children">
+                      <div class="tree-row day-header">
+                        <span>日期</span><span>类型</span><span>金额</span>
+                        <span>分类</span><span>属性</span><span>账户</span>
+                        <span>备注</span><span></span>
+                      </div>
+                      <div class="tree-row day">
+                        <span>6月20日</span>
+                        <span class="text-expense">支出</span>
+                        <span class="text-expense">-¥1,200</span>
+                        <span>住房</span>
+                        <span class="badge badge-necessity">📋刚需</span>
+                        <span>银行卡</span>
+                        <span style="color:var(--text-muted)">房租</span>
+                        <span style="display:flex;gap:2px">
+                          <button class="btn btn-secondary btn-sm" style="padding:2px 6px;font-size:11px">✏️</button>
+                          <button class="btn btn-danger btn-sm" style="padding:2px 6px;font-size:11px">🗑</button>
+                        </span>
+                      </div>
+                      <div class="tree-row day">
+                        <span>6月18日</span>
+                        <span class="text-expense">支出</span>
+                        <span class="text-expense">-¥320</span>
+                        <span>购物</span>
+                        <span class="badge badge-joy">💛悦己</span>
+                        <span>支付宝</span>
+                        <span style="color:var(--text-muted)">T恤</span>
+                        <span style="display:flex;gap:2px">
+                          <button class="btn btn-secondary btn-sm" style="padding:2px 6px;font-size:11px">✏️</button>
+                          <button class="btn btn-danger btn-sm" style="padding:2px 6px;font-size:11px">🗑</button>
+                        </span>
+                      </div>
+                    </div>
+                  </div><!-- /25周 -->
+                </div>
+              </div><!-- /6月 -->
+              <!-- ===== 5月 (collapsed) ===== -->
+              <div class="tree-node">
+                <div class="tree-row" onclick="toggleTree(this)">
+                  <span class="toggle">▶</span>
+                  <span class="tree-icon">📆</span>
+                  <span class="tree-label month">5月</span>
+                  <span class="tree-summary">
+                    <span style="color:var(--green)">收入 ¥9,200</span>
+                    <span style="color:var(--red)">支出 ¥6,100</span>
+                    <span>结余 ¥3,100</span>
+                  </span>
+                </div>
+                <div class="tree-children"></div>
+              </div>
+            </div>
+          </div><!-- /2026年 -->
+          <!-- ===== 2025年 (collapsed) ===== -->
+          <div class="tree-node">
+            <div class="tree-row" onclick="toggleTree(this)">
+              <span class="toggle">▶</span>
+              <span class="tree-icon">📅</span>
+              <span class="tree-label year">2025年</span>
+              <span class="tree-summary">
+                <span style="color:var(--green)">收入 ¥96,000</span>
+                <span style="color:var(--red)">支出 ¥72,500</span>
+                <span>结余 ¥23,500</span>
+              </span>
+            </div>
+            <div class="tree-children"></div>
+          </div>
+        </div>
+
+        <button class="btn-fab" onclick="openModal('add')" title="添加交易">+</button>
+      </div>
+    </div>
+
+    <!-- ====== 2. 统计分析 ====== -->
+    <div class="page" id="page-dashboard">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <h2>统计分析</h2>
+          <p class="subtitle">自定义时间段财务概览</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;color:var(--text-muted)">从</span>
+          <input type="date" class="filter-input" value="2026-03-01" style="width:130px">
+          <span style="font-size:12px;color:var(--text-muted)">至</span>
+          <input type="date" class="filter-input" value="2026-06-27" style="width:130px">
+          <button class="btn btn-primary btn-sm">统计</button>
+        </div>
+      </div>
+      <div class="page-body">
+        <!-- Stat Cards -->
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="label">本月支出</div>
+            <div class="value expense">¥5,280.50</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">本月收入</div>
+            <div class="value income">¥9,500.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">本月结余</div>
+            <div class="value balance">¥4,219.50</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <!-- Line chart -->
+          <div class="chart-card">
+            <h3>消费趋势</h3>
+            <div class="chart-toggle">
+              <button class="active">日</button>
+              <button>周</button>
+              <button>月</button>
+            </div>
+            <div class="placeholder-chart">
+              <div class="bar" style="height:60%"></div>
+              <div class="bar" style="height:35%"></div>
+              <div class="bar" style="height:80%"></div>
+              <div class="bar" style="height:45%"></div>
+              <div class="bar" style="height:30%"></div>
+              <div class="bar" style="height:90%"></div>
+              <div class="bar" style="height:55%"></div>
+              <div class="bar" style="height:70%"></div>
+              <div class="bar" style="height:40%"></div>
+              <div class="bar" style="height:85%"></div>
+              <div class="bar" style="height:65%"></div>
+              <div class="bar" style="height:50%"></div>
+              <div class="bar" style="height:75%"></div>
+              <div class="bar" style="height:35%"></div>
+            </div>
+          </div>
+
+          <!-- Pie: Category -->
+          <div class="chart-card">
+            <h3>支出分类占比</h3>
+            <div class="pie-placeholder">
+              <div class="pie-circle"></div>
+              <div class="pie-legend">
+                <div><span class="legend-dot" style="background:var(--accent)"></span> 餐饮 35%</div>
+                <div><span class="legend-dot" style="background:var(--purple)"></span> 购物 20%</div>
+                <div><span class="legend-dot" style="background:var(--pink)"></span> 交通 17%</div>
+                <div><span class="legend-dot" style="background:var(--amber)"></span> 住房 13%</div>
+                <div><span class="legend-dot" style="background:var(--green)"></span> 其他 15%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pie: Attribute -->
+          <div class="chart-card">
+            <h3>属性占比</h3>
+            <div class="pie-placeholder">
+              <div class="pie-circle" style="background:conic-gradient(var(--text-secondary) 0% 45%, var(--pink) 45% 68%, var(--green) 68% 85%, var(--red) 85% 100%)"></div>
+              <div class="pie-legend">
+                <div><span class="legend-dot" style="background:var(--text-secondary)"></span> 📋 刚需 45%</div>
+                <div><span class="legend-dot" style="background:var(--pink)"></span> 💛 悦己 23%</div>
+                <div><span class="legend-dot" style="background:var(--green)"></span> 💚 值得 17%</div>
+                <div><span class="legend-dot" style="background:var(--red)"></span> 🚫 浪费 15%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Income vs Expense bar -->
+          <div class="chart-card">
+            <h3>收支对比（近6月）</h3>
+            <div style="display:flex; gap:20px; align-items:flex-end; height:180px; padding:8px 0">
+              <div style="flex:1; text-align:center">
+                <div style="height:90px;background:var(--green);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="height:60px;background:var(--red);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="font-size:10px;color:var(--text-muted)">1月</div>
+              </div>
+              <div style="flex:1; text-align:center">
+                <div style="height:95px;background:var(--green);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="height:70px;background:var(--red);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="font-size:10px;color:var(--text-muted)">2月</div>
+              </div>
+              <div style="flex:1; text-align:center">
+                <div style="height:85px;background:var(--green);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="height:75px;background:var(--red);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="font-size:10px;color:var(--text-muted)">3月</div>
+              </div>
+              <div style="flex:1; text-align:center">
+                <div style="height:100px;background:var(--green);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="height:80px;background:var(--red);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="font-size:10px;color:var(--text-muted)">4月</div>
+              </div>
+              <div style="flex:1; text-align:center">
+                <div style="height:92px;background:var(--green);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="height:65px;background:var(--red);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="font-size:10px;color:var(--text-muted)">5月</div>
+              </div>
+              <div style="flex:1; text-align:center">
+                <div style="height:87px;background:var(--green);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="height:72px;background:var(--red);border-radius:4px 4px 0 0;opacity:0.8;margin-bottom:4px"></div>
+                <div style="font-size:10px;color:var(--text-muted)">6月</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:var(--text-muted)">
+              <span>🟢 收入</span><span>🔴 支出</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 3. 预算管理 ====== -->
+    <div class="page" id="page-budget">
+      <div class="page-header">
+        <h2>预算管理</h2>
+        <p class="subtitle">2026年6月</p>
+      </div>
+      <div class="page-body">
+        <!-- Total Budget -->
+        <div class="card" style="margin-bottom:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div>
+              <div style="font-weight:700;font-size:16px">总预算</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px">月度支出限额</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:24px;font-weight:700">¥5,000</div>
+              <div style="font-size:12px;color:var(--amber)">已用 ¥5,280 · 超支 ¥280</div>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill danger" style="width:106%"></div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <span style="font-size:12px;color:var(--red);font-weight:600">⚠ 已超预算 6%</span>
+          </div>
+        </div>
+
+        <!-- Category Budgets -->
+        <div class="card">
+          <div style="font-weight:700;font-size:16px;margin-bottom:16px">分项预算</div>
+
+          <div class="budget-row">
+            <div class="cat-name">餐饮</div>
+            <div class="progress-wrap">
+              <div class="progress-bar">
+                <div class="progress-fill safe" style="width:65%"></div>
+              </div>
+            </div>
+            <div class="budget-info">¥1,300 / ¥2,000</div>
+          </div>
+
+          <div class="budget-row">
+            <div class="cat-name">交通</div>
+            <div class="progress-wrap">
+              <div class="progress-bar">
+                <div class="progress-fill safe" style="width:45%"></div>
+              </div>
+            </div>
+            <div class="budget-info">¥450 / ¥1,000</div>
+          </div>
+
+          <div class="budget-row">
+            <div class="cat-name">购物</div>
+            <div class="progress-wrap">
+              <div class="progress-bar">
+                <div class="progress-fill warning" style="width:92%"></div>
+              </div>
+            </div>
+            <div class="budget-info" style="color:var(--amber)">¥920 / ¥1,000</div>
+          </div>
+
+          <div class="budget-row">
+            <div class="cat-name">娱乐</div>
+            <div class="progress-wrap">
+              <div class="progress-bar">
+                <div class="progress-fill danger" style="width:120%"></div>
+              </div>
+            </div>
+            <div class="budget-info" style="color:var(--red)">¥600 / ¥500 ⚠</div>
+          </div>
+
+          <div style="margin-top:16px;text-align:right">
+            <button class="btn btn-primary btn-sm" onclick="openModal('budget')">+ 添加分项预算</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 4. 账单提醒 ====== -->
+    <div class="page" id="page-reminders">
+      <div class="page-header">
+        <h2>账单提醒</h2>
+        <p class="subtitle">管理定期账单和到期提醒</p>
+      </div>
+      <div class="page-body">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+          <button class="btn btn-primary btn-sm">+ 添加提醒</button>
+        </div>
+
+        <div class="item-list">
+          <div class="item-card">
+            <div class="item-icon">🏠</div>
+            <div class="item-info">
+              <div class="item-name">房租</div>
+              <div class="item-meta">每月 5 号 · 月度重复</div>
+            </div>
+            <div class="item-amount due">¥3,000</div>
+            <div style="font-size:12px;color:var(--text-muted)">2026-07-05</div>
+            <div class="item-actions">
+              <button class="btn btn-secondary btn-sm">✏️</button>
+              <button class="btn btn-danger btn-sm">🗑</button>
+            </div>
+          </div>
+
+          <div class="item-card" style="border-color:var(--amber)">
+            <div class="item-icon">💳</div>
+            <div class="item-info">
+              <div class="item-name">信用卡还款</div>
+              <div class="item-meta">每月 15 号 · 月度重复</div>
+            </div>
+            <div class="item-amount due">¥2,500</div>
+            <div style="font-size:12px">
+              <span class="overdue-badge">3天后到期</span>
+            </div>
+            <div class="item-actions">
+              <button class="btn btn-secondary btn-sm">✏️</button>
+              <button class="btn btn-danger btn-sm">🗑</button>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-icon">📱</div>
+            <div class="item-info">
+              <div class="item-name">手机话费</div>
+              <div class="item-meta">每月 1 号 · 月度重复</div>
+            </div>
+            <div class="item-amount due">¥59</div>
+            <div style="font-size:12px;color:var(--text-muted)">2026-07-01</div>
+            <div class="item-actions">
+              <button class="btn btn-secondary btn-sm">✏️</button>
+              <button class="btn btn-danger btn-sm">🗑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 5. 快捷模板 ====== -->
+    <div class="page" id="page-templates">
+      <div class="page-header">
+        <h2>快捷模板</h2>
+        <p class="subtitle">一键录入常用交易</p>
+      </div>
+      <div class="page-body">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+          <button class="btn btn-primary btn-sm">+ 新建模板</button>
+        </div>
+
+        <div class="item-list">
+          <div class="item-card">
+            <div class="item-icon">☕</div>
+            <div class="item-info">
+              <div class="item-name">美式咖啡</div>
+              <div class="item-meta">支出 · 餐饮 · 支付宝</div>
+            </div>
+            <div class="item-amount" style="color:var(--red)">¥18.00</div>
+            <div class="item-actions">
+              <button class="btn btn-primary btn-sm" title="一键录入">⚡ 录入</button>
+              <button class="btn btn-secondary btn-sm">✏️</button>
+              <button class="btn btn-danger btn-sm">🗑</button>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-icon">🚇</div>
+            <div class="item-info">
+              <div class="item-name">地铁通勤</div>
+              <div class="item-meta">支出 · 交通 · 支付宝</div>
+            </div>
+            <div class="item-amount" style="color:var(--red)">¥6.00</div>
+            <div class="item-actions">
+              <button class="btn btn-primary btn-sm">⚡ 录入</button>
+              <button class="btn btn-secondary btn-sm">✏️</button>
+              <button class="btn btn-danger btn-sm">🗑</button>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-icon">🍱</div>
+            <div class="item-info">
+              <div class="item-name">午餐外卖</div>
+              <div class="item-meta">支出 · 餐饮 · 微信</div>
+            </div>
+            <div class="item-amount" style="color:var(--red)">¥25.00</div>
+            <div class="item-actions">
+              <button class="btn btn-primary btn-sm">⚡ 录入</button>
+              <button class="btn btn-secondary btn-sm">✏️</button>
+              <button class="btn btn-danger btn-sm">🗑</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 6. 设置 ====== -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <h2>设置</h2>
+        <p class="subtitle">应用配置与数据管理</p>
+      </div>
+      <div class="page-body">
+        <div class="settings-section">
+          <h3>🤖 AI 预算建议</h3>
+          <div class="settings-row">
+            <div>
+              <div class="setting-label">DeepSeek API Key</div>
+              <div class="setting-desc">用于 AI 智能预算建议功能</div>
+            </div>
+            <input type="password" class="filter-input" placeholder="sk-..." style="width:240px">
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="setting-label">自定义提示词</div>
+              <div class="setting-desc">发送给 AI 的分析指令（可自行修改）</div>
+            </div>
+            <button class="btn btn-secondary btn-sm">编辑</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>💾 数据管理</h3>
+          <div class="settings-row">
+            <div>
+              <div class="setting-label">导出数据</div>
+              <div class="setting-desc">导出交易记录为 Excel 表格 (.xlsx)</div>
+            </div>
+            <button class="btn btn-secondary btn-sm">导出</button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="setting-label">备份数据库</div>
+              <div class="setting-desc">创建数据库备份文件</div>
+            </div>
+            <button class="btn btn-secondary btn-sm">备份</button>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="setting-label">还原数据库</div>
+              <div class="setting-desc">从备份文件恢复数据</div>
+            </div>
+            <button class="btn btn-secondary btn-sm">还原</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>ℹ️ 关于</h3>
+          <div class="settings-row">
+            <div class="setting-label">版本</div>
+            <div style="color:var(--text-muted)">Accounting v0.1.0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// Tree toggle
+function toggleTree(row) {
+  const toggle = row.querySelector('.toggle');
+  if (!toggle || toggle.classList.contains('hidden')) return;
+
+  toggle.classList.toggle('expanded');
+  const children = row.parentElement.querySelector('.tree-children');
+  if (children) {
+    children.classList.toggle('open');
+  }
+}
+
+// Sidebar navigation
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const pageId = 'page-' + btn.dataset.page;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+  });
+});
+
+// Modal
+function openModal(mode) {
+  document.getElementById('modal-title').textContent =
+    mode === 'edit' ? '编辑交易记录' : '添加交易记录';
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Type toggle
+function switchType(btn, type) {
+  const toggle = btn.parentElement;
+  toggle.querySelectorAll('button').forEach(b => {
+    b.className = '';
+  });
+  btn.className = type === 'expense' ? 'active-expense' : 'active-income';
+}
+
+// Chart toggle
+document.querySelectorAll('.chart-toggle').forEach(toggle => {
+  toggle.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      toggle.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+});
+
+// Show toast on load (demo notification)
+setTimeout(() => {
+  document.getElementById('toast').classList.add('show');
+}, 800);
+</script>
+
+</body>
+</html>

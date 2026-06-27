@@ -14,3 +14,11 @@ SPEC.md
 accounting.db
 *.db
 backups/
+
+# Screenshots
+*.png
+*.jpg
+*.jpeg
+
+# Playwright
+.playwright-mcp/
