@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Accounting
+Name[zh_CN]=💰 个人记账
+Comment=Personal accounting software
+Comment[zh_CN]=个人记账 · 智慧理财
+Exec=/home/havenlynx/桌面/Accounting/accounting.sh
+Icon=/home/havenlynx/桌面/Accounting/accounting.svg
+Terminal=false
+Type=Application
+Categories=Finance;Office;
+StartupWMClass=Accounting

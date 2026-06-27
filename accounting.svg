@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- 钱袋图标 -->
+  <!-- 袋体 -->
+  <ellipse cx="64" cy="72" rx="40" ry="42" fill="#818cf8" stroke="#6366f1" stroke-width="3"/>
+  <!-- 袋口收紧 -->
+  <path d="M34 42 Q64 28 94 42" fill="none" stroke="#6366f1" stroke-width="4" stroke-linecap="round"/>
+  <!-- 袋口扎绳 -->
+  <ellipse cx="64" cy="36" rx="12" ry="5" fill="#a78bfa" stroke="#6366f1" stroke-width="2"/>
+  <!-- $ 符号 -->
+  <text x="64" y="86" text-anchor="middle" font-size="44" font-weight="bold" font-family="sans-serif" fill="#ffffff">$</text>
+</svg>
