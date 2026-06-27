@@ -70,68 +70,81 @@ class TransactionPanel(QWidget):
         title.setObjectName("pageTitle")
         layout.addWidget(title)
 
-        # ---- 筛选栏 ----
+        # ---- 筛选栏（两行）----
         filter_widget = QWidget()
         filter_widget.setObjectName("card")
-        filter_layout = QHBoxLayout(filter_widget)
-        filter_layout.setContentsMargins(16, 10, 16, 10)
-        filter_layout.setSpacing(10)
+        filter_outer = QVBoxLayout(filter_widget)
+        filter_outer.setContentsMargins(16, 10, 16, 10)
+        filter_outer.setSpacing(8)
 
-        self._add_filter_label(filter_layout, "从")
+        # 第一行：日期范围
+        row1 = QHBoxLayout()
+        row1.setSpacing(10)
+
+        self._add_filter_label(row1, "从")
 
         self._date_from = QDateEdit()
         self._date_from.setCalendarPopup(True)
         self._date_from.setDate(QDate.currentDate().addMonths(-1))
         self._date_from.setDisplayFormat("yyyy-MM-dd")
         self._date_from.setMinimumWidth(130)
-        filter_layout.addWidget(self._date_from)
+        row1.addWidget(self._date_from)
 
-        self._add_filter_label(filter_layout, "至")
+        self._add_filter_label(row1, "至")
 
         self._date_to = QDateEdit()
         self._date_to.setCalendarPopup(True)
         self._date_to.setDate(QDate.currentDate())
         self._date_to.setDisplayFormat("yyyy-MM-dd")
         self._date_to.setMinimumWidth(130)
-        filter_layout.addWidget(self._date_to)
+        row1.addWidget(self._date_to)
+
+        row1.addStretch()
+        filter_outer.addLayout(row1)
+
+        # 第二行：类型 / 分类 / 账户 / 属性 / 查询
+        row2 = QHBoxLayout()
+        row2.setSpacing(10)
 
         # 类型筛选
-        self._add_filter_label(filter_layout, "类型")
+        self._add_filter_label(row2, "类型")
         self._type_filter = QComboBox()
         self._type_filter.setMinimumWidth(100)
         self._type_filter.addItem("全部", None)
         self._type_filter.addItem("💰 收入", "income")
         self._type_filter.addItem("💸 支出", "expense")
-        filter_layout.addWidget(self._type_filter)
+        row2.addWidget(self._type_filter)
 
         # 分类筛选
-        self._add_filter_label(filter_layout, "分类")
+        self._add_filter_label(row2, "分类")
         self._category_filter = QComboBox()
-        self._category_filter.setMinimumWidth(100)
-        filter_layout.addWidget(self._category_filter)
+        self._category_filter.setMinimumWidth(120)
+        row2.addWidget(self._category_filter)
 
         # 账户筛选
-        self._add_filter_label(filter_layout, "账户")
+        self._add_filter_label(row2, "账户")
         self._account_filter = QComboBox()
         self._account_filter.setMinimumWidth(100)
-        filter_layout.addWidget(self._account_filter)
+        row2.addWidget(self._account_filter)
 
         # 属性筛选
-        self._add_filter_label(filter_layout, "属性")
+        self._add_filter_label(row2, "属性")
         self._attr_filter = QComboBox()
-        self._attr_filter.setMinimumWidth(100)
+        self._attr_filter.setMinimumWidth(110)
         self._attr_filter.addItem("全部", None)
         for key, label in ATTRIBUTE_LABELS.items():
             self._attr_filter.addItem(label, key)
-        filter_layout.addWidget(self._attr_filter)
+        row2.addWidget(self._attr_filter)
 
         # 查询按钮
         search_btn = QPushButton("🔍 查询")
         search_btn.setObjectName("btnSmall")
         search_btn.clicked.connect(self.refresh)
-        filter_layout.addWidget(search_btn)
+        row2.addWidget(search_btn)
 
-        filter_layout.addStretch()
+        row2.addStretch()
+        filter_outer.addLayout(row2)
+
         layout.addWidget(filter_widget)
 
         # ---- 树形控件 ----
