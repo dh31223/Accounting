@@ -193,8 +193,8 @@ QLineEdit, QDateEdit, QComboBox, QDoubleSpinBox, QSpinBox {{
     color: {COLOR_TEXT};
     border: 1px solid {COLOR_BORDER};
     border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 6px 8px;
+    font-size: 13px;
     selection-background-color: {COLOR_ACCENT};
 }}
 

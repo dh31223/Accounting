@@ -83,6 +83,7 @@ class TransactionPanel(QWidget):
         self._date_from.setCalendarPopup(True)
         self._date_from.setDate(QDate.currentDate().addMonths(-1))
         self._date_from.setDisplayFormat("yyyy-MM-dd")
+        self._date_from.setMinimumWidth(130)
         filter_layout.addWidget(self._date_from)
 
         self._add_filter_label(filter_layout, "至")
@@ -91,12 +92,13 @@ class TransactionPanel(QWidget):
         self._date_to.setCalendarPopup(True)
         self._date_to.setDate(QDate.currentDate())
         self._date_to.setDisplayFormat("yyyy-MM-dd")
+        self._date_to.setMinimumWidth(130)
         filter_layout.addWidget(self._date_to)
 
         # 类型筛选
         self._add_filter_label(filter_layout, "类型")
         self._type_filter = QComboBox()
-        self._type_filter.setMinimumWidth(90)
+        self._type_filter.setMinimumWidth(100)
         self._type_filter.addItem("全部", None)
         self._type_filter.addItem("💰 收入", "income")
         self._type_filter.addItem("💸 支出", "expense")
@@ -105,18 +107,19 @@ class TransactionPanel(QWidget):
         # 分类筛选
         self._add_filter_label(filter_layout, "分类")
         self._category_filter = QComboBox()
-        self._category_filter.setMinimumWidth(90)
+        self._category_filter.setMinimumWidth(100)
         filter_layout.addWidget(self._category_filter)
 
         # 账户筛选
         self._add_filter_label(filter_layout, "账户")
         self._account_filter = QComboBox()
-        self._account_filter.setMinimumWidth(80)
+        self._account_filter.setMinimumWidth(100)
         filter_layout.addWidget(self._account_filter)
 
         # 属性筛选
         self._add_filter_label(filter_layout, "属性")
         self._attr_filter = QComboBox()
+        self._attr_filter.setMinimumWidth(100)
         self._attr_filter.addItem("全部", None)
         for key, label in ATTRIBUTE_LABELS.items():
             self._attr_filter.addItem(label, key)
