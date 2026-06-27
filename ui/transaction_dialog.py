@@ -126,12 +126,11 @@ class TransactionDialog(QDialog):
         # 账户
         self._account_combo = QComboBox()
         self._account_combo.setMaxVisibleItems(8)
-        self._account_combo.setMaxVisibleItems(8)
         form.addRow("账户:", self._account_combo)
 
         # 备注
         self._note_edit = QLineEdit()
-        self._note_edit.setPlaceholderText="可选备注..."
+        self._note_edit.setPlaceholderText("可选备注...")
         form.addRow("备注:", self._note_edit)
 
         layout.addLayout(form)
