@@ -32,10 +32,11 @@ def _aggregate_data(months: int = 3) -> dict:
     """聚合近 N 个月数据为文本摘要。"""
     today = date.today()
     end = today.isoformat()
-    start = (today.replace(day=1) - timedelta(days=1)).replace(day=1)
-    # 往前推 months 个月
+    # 从当前月 1 号开始，往前推 months-1 个月
+    # months=3 → 当前月 + 前 2 个月
+    start = today.replace(day=1)
     for _ in range(months - 1):
-        start = (start.replace(day=1) - timedelta(days=1)).replace(day=1)
+        start = (start - timedelta(days=1)).replace(day=1)
     start = start.isoformat()
 
     # 汇总
