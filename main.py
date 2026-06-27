@@ -6,6 +6,13 @@
 """
 
 import sys
+import os
+
+# ---- 必须在 QApplication 创建之前设置 ----
+# 确保 PyQt6 能加载系统的中文输入法插件（fcitx/ibus）
+if "QT_IM_MODULE" not in os.environ:
+    os.environ["QT_IM_MODULE"] = "fcitx"
+
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt
 
