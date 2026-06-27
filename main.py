@@ -9,9 +9,11 @@ import sys
 import os
 
 # ---- 必须在 QApplication 创建之前设置 ----
-# 确保 PyQt6 能加载系统的中文输入法插件（fcitx/ibus）
+# Linux 中文输入法支持：
+# PyQt6(pip) 自带 Qt 6.11，与系统 fcitx 插件(Qt 6.4) ABI 不兼容。
+# 改用 ibus 协议 — PyQt6 自带 libibusplatforminputcontextplugin.so。
 if "QT_IM_MODULE" not in os.environ:
-    os.environ["QT_IM_MODULE"] = "fcitx"
+    os.environ["QT_IM_MODULE"] = "ibus"
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt
