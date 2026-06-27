@@ -14,7 +14,7 @@ from PyQt6.QtWidgets import (
     QAbstractItemView, QHeaderView, QApplication,
 )
 from PyQt6.QtCore import Qt, QDate, pyqtSignal
-from PyQt6.QtGui import QAction, QCursor
+from PyQt6.QtGui import QAction, QColor, QCursor
 
 from core.transaction import TransactionService
 from core.models import Transaction
@@ -370,9 +370,9 @@ class TransactionPanel(QWidget):
 
                             # 收入绿色，支出红色
                             if txn.type == "income":
-                                txn_item.setForeground(2, Qt.GlobalColor.darkGreen)
+                                txn_item.setForeground(2, QColor("#34d399"))
                             else:
-                                txn_item.setForeground(2, Qt.GlobalColor.red)
+                                txn_item.setForeground(2, QColor("#f87171"))
 
                             txn_item.setData(0, Qt.ItemDataRole.UserRole, ("txn", txn.id))
                             total_count += 1
