@@ -7,6 +7,7 @@
 
 import sys
 import os
+import subprocess
 
 # ---- 必须在 QApplication 创建之前设置 ----
 # Linux 中文输入法支持：
@@ -14,6 +15,27 @@ import os
 # 改用 ibus 协议 — PyQt6 自带 libibusplatforminputcontextplugin.so。
 if "QT_IM_MODULE" not in os.environ:
     os.environ["QT_IM_MODULE"] = "ibus"
+
+
+def _ensure_ibus():
+    """确保 ibus-daemon 在运行（Linux 中文输入法依赖）。"""
+    if sys.platform != "linux":
+        return
+    # 检查 ibus-daemon 是否已在运行
+    try:
+        subprocess.run(["pgrep", "-x", "ibus-daemon"], capture_output=True, check=True)
+        return  # 已经在运行
+    except subprocess.CalledProcessError:
+        pass
+    # 尝试启动 ibus-daemon
+    try:
+        subprocess.Popen(
+            ["ibus-daemon", "-drx"],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+    except FileNotFoundError:
+        pass  # ibus 未安装，静默跳过
+
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt
@@ -25,6 +47,9 @@ from ui.main_window import MainWindow
 
 def main():
     """应用入口。"""
+    # 0. 确保输入法可用
+    _ensure_ibus()
+
     # 1. 数据库初始化
     init_db()
 
