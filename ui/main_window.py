@@ -15,6 +15,8 @@ from PyQt6.QtGui import QIcon, QAction, QKeySequence
 from ui.theme import get_stylesheet, COLOR_SIDEBAR, COLOR_ACCENT, COLOR_TEXT_SECONDARY
 from ui.transaction_panel import TransactionPanel
 from ui.dashboard import DashboardPage
+from ui.budget_panel import BudgetPanel
+from ui.reminder_panel import ReminderPanel
 
 
 # 导航项定义
@@ -70,8 +72,8 @@ class MainWindow(QMainWindow):
         # 创建各页面
         self._transaction_panel = TransactionPanel()
         self._dashboard_page = DashboardPage()
-        self._budget_page = self._placeholder_page("💰 预算管理", "将在阶段 6 实现")
-        self._reminders_page = self._placeholder_page("🔔 账单提醒", "将在阶段 6 实现")
+        self._budget_page = BudgetPanel()
+        self._reminders_page = ReminderPanel()
         self._templates_page = self._placeholder_page("📋 交易模板", "将在阶段 7 实现")
         self._settings_page = self._placeholder_page("⚙️ 设置", "将在阶段 7 实现")
 
