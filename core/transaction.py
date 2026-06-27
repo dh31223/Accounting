@@ -33,17 +33,25 @@ class TransactionService:
         if own_conn:
             conn = get_connection()
 
-        cursor = conn.execute(
-            """INSERT INTO transactions (date, type, amount, category, attribute, note, account)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
-            (txn.date, txn.type, txn.amount, txn.category,
-             txn.attribute, txn.note, txn.account)
-        )
-        if own_conn:
-            conn.commit()
+        try:
+            cursor = conn.execute(
+                """INSERT INTO transactions (date, type, amount, category, attribute, note, account)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (txn.date, txn.type, txn.amount, txn.category,
+                 txn.attribute, txn.note, txn.account)
+            )
+            if own_conn:
+                conn.commit()
 
-        txn.id = cursor.lastrowid
-        return txn
+            txn.id = cursor.lastrowid
+            return txn
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
+            if own_conn:
+                close_connection(conn)
 
     # ---- READ ----
 
@@ -179,20 +187,27 @@ class TransactionService:
         if own_conn:
             conn = get_connection()
 
-        cursor = conn.execute(
-            """UPDATE transactions
-               SET date=?, type=?, amount=?, category=?, attribute=?,
-                   note=?, account=?, updated_at=CURRENT_TIMESTAMP
-               WHERE id=?""",
-            (txn.date, txn.type, txn.amount, txn.category,
-             txn.attribute, txn.note, txn.account, txn.id)
-        )
+        try:
+            cursor = conn.execute(
+                """UPDATE transactions
+                   SET date=?, type=?, amount=?, category=?, attribute=?,
+                       note=?, account=?, updated_at=CURRENT_TIMESTAMP
+                   WHERE id=?""",
+                (txn.date, txn.type, txn.amount, txn.category,
+                 txn.attribute, txn.note, txn.account, txn.id)
+            )
 
-        if own_conn:
-            conn.commit()
-            close_connection(conn)
+            if own_conn:
+                conn.commit()
 
-        return cursor.rowcount > 0
+            return cursor.rowcount > 0
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
+            if own_conn:
+                close_connection(conn)
 
     # ---- DELETE ----
 
@@ -207,15 +222,22 @@ class TransactionService:
         if own_conn:
             conn = get_connection()
 
-        cursor = conn.execute(
-            "DELETE FROM transactions WHERE id = ?", (txn_id,)
-        )
+        try:
+            cursor = conn.execute(
+                "DELETE FROM transactions WHERE id = ?", (txn_id,)
+            )
 
-        if own_conn:
-            conn.commit()
-            close_connection(conn)
+            if own_conn:
+                conn.commit()
 
-        return cursor.rowcount > 0
+            return cursor.rowcount > 0
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
+            if own_conn:
+                close_connection(conn)
 
 
 # ============================================================

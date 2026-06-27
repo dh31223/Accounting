@@ -11,6 +11,19 @@ from db.connection import get_connection, close_connection
 from core.models import BillReminder
 
 
+def _advance_month(d: date) -> date:
+    """安全地推进一个月，处理月末边界（如 Jan 31 → Feb 28）。"""
+    year, month = (d.year, d.month + 1) if d.month < 12 else (d.year + 1, 1)
+    last_day = monthrange(year, month)[1]
+    return d.replace(year=year, month=month, day=min(d.day, last_day))
+
+
+def _advance_year(d: date) -> date:
+    """安全地推进一年，处理 Feb 29 → Feb 28（非闰年）。"""
+    last_day = monthrange(d.year + 1, d.month)[1]
+    return d.replace(year=d.year + 1, day=min(d.day, last_day))
+
+
 class ReminderService:
     """账单提醒服务。"""
 
@@ -23,18 +36,26 @@ class ReminderService:
         if own_conn:
             conn = get_connection()
 
-        cursor = conn.execute(
-            """INSERT INTO bill_reminders (name, amount, due_date, repeat_cycle, note)
-               VALUES (?, ?, ?, ?, ?)""",
-            (reminder.name, reminder.amount, reminder.due_date,
-             reminder.repeat_cycle, reminder.note)
-        )
+        try:
+            cursor = conn.execute(
+                """INSERT INTO bill_reminders (name, amount, due_date, repeat_cycle, note)
+                   VALUES (?, ?, ?, ?, ?)""",
+                (reminder.name, reminder.amount, reminder.due_date,
+                 reminder.repeat_cycle, reminder.note)
+            )
 
-        if own_conn:
-            conn.commit()
+            if own_conn:
+                conn.commit()
 
-        reminder.id = cursor.lastrowid
-        return reminder
+            reminder.id = cursor.lastrowid
+            return reminder
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
+            if own_conn:
+                close_connection(conn)
 
     @staticmethod
     def get_all(conn=None) -> list[BillReminder]:
@@ -62,19 +83,26 @@ class ReminderService:
         if own_conn:
             conn = get_connection()
 
-        cursor = conn.execute(
-            """UPDATE bill_reminders
-               SET name=?, amount=?, due_date=?, repeat_cycle=?, note=?
-               WHERE id=?""",
-            (reminder.name, reminder.amount, reminder.due_date,
-             reminder.repeat_cycle, reminder.note, reminder.id)
-        )
+        try:
+            cursor = conn.execute(
+                """UPDATE bill_reminders
+                   SET name=?, amount=?, due_date=?, repeat_cycle=?, note=?
+                   WHERE id=?""",
+                (reminder.name, reminder.amount, reminder.due_date,
+                 reminder.repeat_cycle, reminder.note, reminder.id)
+            )
 
-        if own_conn:
-            conn.commit()
-            close_connection(conn)
+            if own_conn:
+                conn.commit()
 
-        return cursor.rowcount > 0
+            return cursor.rowcount > 0
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
+            if own_conn:
+                close_connection(conn)
 
     @staticmethod
     def delete(reminder_id: int, conn=None) -> bool:
@@ -83,15 +111,22 @@ class ReminderService:
         if own_conn:
             conn = get_connection()
 
-        cursor = conn.execute(
-            "DELETE FROM bill_reminders WHERE id = ?", (reminder_id,)
-        )
+        try:
+            cursor = conn.execute(
+                "DELETE FROM bill_reminders WHERE id = ?", (reminder_id,)
+            )
 
-        if own_conn:
-            conn.commit()
-            close_connection(conn)
+            if own_conn:
+                conn.commit()
 
-        return cursor.rowcount > 0
+            return cursor.rowcount > 0
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
+            if own_conn:
+                close_connection(conn)
 
     # ---- 到期检测 ----
 
@@ -125,13 +160,9 @@ class ReminderService:
             # 如果已过期且有重复周期，推进日期
             while due < today:
                 if reminder.repeat_cycle == "monthly":
-                    # 移到下个月同一天
-                    if due.month == 12:
-                        due = due.replace(year=due.year + 1, month=1)
-                    else:
-                        due = due.replace(month=due.month + 1)
+                    due = _advance_month(due)
                 elif reminder.repeat_cycle == "yearly":
-                    due = due.replace(year=due.year + 1)
+                    due = _advance_year(due)
                 else:
                     break  # 不重复则保留原日期
 

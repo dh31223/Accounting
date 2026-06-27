@@ -22,18 +22,26 @@ class TemplateService:
         if own_conn:
             conn = get_connection()
 
-        cursor = conn.execute(
-            """INSERT INTO templates (name, type, amount, category, attribute, account, note)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
-            (tmpl.name, tmpl.type, tmpl.amount, tmpl.category,
-             tmpl.attribute, tmpl.account, tmpl.note)
-        )
+        try:
+            cursor = conn.execute(
+                """INSERT INTO templates (name, type, amount, category, attribute, account, note)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (tmpl.name, tmpl.type, tmpl.amount, tmpl.category,
+                 tmpl.attribute, tmpl.account, tmpl.note)
+            )
 
-        if own_conn:
-            conn.commit()
+            if own_conn:
+                conn.commit()
 
-        tmpl.id = cursor.lastrowid
-        return tmpl
+            tmpl.id = cursor.lastrowid
+            return tmpl
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
+            if own_conn:
+                close_connection(conn)
 
     @staticmethod
     def get_all(conn=None) -> list[Template]:
@@ -61,19 +69,26 @@ class TemplateService:
         if own_conn:
             conn = get_connection()
 
-        cursor = conn.execute(
-            """UPDATE templates
-               SET name=?, type=?, amount=?, category=?, attribute=?, account=?, note=?
-               WHERE id=?""",
-            (tmpl.name, tmpl.type, tmpl.amount, tmpl.category,
-             tmpl.attribute, tmpl.account, tmpl.note, tmpl.id)
-        )
+        try:
+            cursor = conn.execute(
+                """UPDATE templates
+                   SET name=?, type=?, amount=?, category=?, attribute=?, account=?, note=?
+                   WHERE id=?""",
+                (tmpl.name, tmpl.type, tmpl.amount, tmpl.category,
+                 tmpl.attribute, tmpl.account, tmpl.note, tmpl.id)
+            )
 
-        if own_conn:
-            conn.commit()
-            close_connection(conn)
+            if own_conn:
+                conn.commit()
 
-        return cursor.rowcount > 0
+            return cursor.rowcount > 0
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
+            if own_conn:
+                close_connection(conn)
 
     @staticmethod
     def delete(tmpl_id: int, conn=None) -> bool:
@@ -82,15 +97,22 @@ class TemplateService:
         if own_conn:
             conn = get_connection()
 
-        cursor = conn.execute(
-            "DELETE FROM templates WHERE id = ?", (tmpl_id,)
-        )
+        try:
+            cursor = conn.execute(
+                "DELETE FROM templates WHERE id = ?", (tmpl_id,)
+            )
 
-        if own_conn:
-            conn.commit()
-            close_connection(conn)
+            if own_conn:
+                conn.commit()
 
-        return cursor.rowcount > 0
+            return cursor.rowcount > 0
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
+            if own_conn:
+                close_connection(conn)
 
     # ---- 一键生成交易 ----
 
@@ -109,30 +131,35 @@ class TemplateService:
         if own_conn:
             conn = get_connection()
 
-        row = conn.execute(
-            "SELECT * FROM templates WHERE id = ?", (tmpl_id,)
-        ).fetchone()
+        try:
+            row = conn.execute(
+                "SELECT * FROM templates WHERE id = ?", (tmpl_id,)
+            ).fetchone()
 
-        if not row:
+            if not row:
+                return None
+
+            tmpl = Template.from_row(row)
+            txn = Transaction(
+                date=date_str,
+                type=tmpl.type,
+                amount=tmpl.amount,
+                category=tmpl.category,
+                attribute=tmpl.attribute,
+                note=tmpl.note,
+                account=tmpl.account,
+            )
+
+            result = TransactionService.create(txn, conn)
+
+            if own_conn:
+                conn.commit()
+
+            return result
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
             if own_conn:
                 close_connection(conn)
-            return None
-
-        tmpl = Template.from_row(row)
-        txn = Transaction(
-            date=date_str,
-            type=tmpl.type,
-            amount=tmpl.amount,
-            category=tmpl.category,
-            attribute=tmpl.attribute,
-            note=tmpl.note,
-            account=tmpl.account,
-        )
-
-        result = TransactionService.create(txn, conn)
-
-        if own_conn:
-            conn.commit()
-            close_connection(conn)
-
-        return result

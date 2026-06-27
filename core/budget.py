@@ -26,30 +26,37 @@ class BudgetService:
         if own_conn:
             conn = get_connection()
 
-        existing = conn.execute(
-            "SELECT id FROM budgets WHERE category IS ? AND period_month = ?",
-            (category, period_month)
-        ).fetchone()
+        try:
+            existing = conn.execute(
+                "SELECT id FROM budgets WHERE category IS ? AND period_month = ?",
+                (category, period_month)
+            ).fetchone()
 
-        if existing:
-            conn.execute(
-                "UPDATE budgets SET amount = ? WHERE id = ?",
-                (amount, existing["id"])
-            )
-            budget_id = existing["id"]
-        else:
-            cursor = conn.execute(
-                "INSERT INTO budgets (category, amount, period_month) VALUES (?, ?, ?)",
-                (category, amount, period_month)
-            )
-            budget_id = cursor.lastrowid
+            if existing:
+                conn.execute(
+                    "UPDATE budgets SET amount = ? WHERE id = ?",
+                    (amount, existing["id"])
+                )
+                budget_id = existing["id"]
+            else:
+                cursor = conn.execute(
+                    "INSERT INTO budgets (category, amount, period_month) VALUES (?, ?, ?)",
+                    (category, amount, period_month)
+                )
+                budget_id = cursor.lastrowid
 
-        if own_conn:
-            conn.commit()
-            close_connection(conn)
+            if own_conn:
+                conn.commit()
 
-        return Budget(id=budget_id, category=category, amount=amount,
-                      period_month=period_month)
+            return Budget(id=budget_id, category=category, amount=amount,
+                          period_month=period_month)
+        except Exception:
+            if own_conn:
+                conn.rollback()
+            raise
+        finally:
+            if own_conn:
+                close_connection(conn)
 
     @staticmethod
     def get_budgets(period_month: str, conn=None) -> list[Budget]:
