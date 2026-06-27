@@ -1,7 +1,7 @@
 """主窗口框架。
 
 侧边导航 + QStackedWidget 内容区切换。
-阶段 4 实现：交易记录（完整）、其他页面（占位）。
+阶段 4-8: 全部功能页面已实现。
 """
 
 from PyQt6.QtWidgets import (
@@ -19,6 +19,7 @@ from ui.budget_panel import BudgetPanel
 from ui.reminder_panel import ReminderPanel
 from ui.template_panel import TemplatePanel
 from ui.settings_dialog import SettingsPage
+from ui.ai_panel import AIPanel
 
 
 # 导航项定义
@@ -28,6 +29,7 @@ NAV_ITEMS = [
     ("budget", "💰 预算管理"),
     ("reminders", "🔔 账单提醒"),
     ("templates", "📋 交易模板"),
+    ("ai", "🤖 AI 建议"),
     ("settings", "⚙️ 设置"),
 ]
 
@@ -77,6 +79,7 @@ class MainWindow(QMainWindow):
         self._budget_page = BudgetPanel()
         self._reminders_page = ReminderPanel()
         self._templates_page = TemplatePanel()
+        self._ai_page = AIPanel()
         self._settings_page = SettingsPage()
 
         self._stack.addWidget(self._transaction_panel)   # index 0
@@ -84,7 +87,8 @@ class MainWindow(QMainWindow):
         self._stack.addWidget(self._budget_page)         # index 2
         self._stack.addWidget(self._reminders_page)      # index 3
         self._stack.addWidget(self._templates_page)      # index 4
-        self._stack.addWidget(self._settings_page)       # index 5
+        self._stack.addWidget(self._ai_page)             # index 5
+        self._stack.addWidget(self._settings_page)       # index 6
 
         root_layout.addWidget(self._stack, stretch=1)
 

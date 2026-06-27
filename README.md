@@ -29,7 +29,8 @@ Accounting/
 │   ├── reminder.py          # 账单提醒 + 到期检测
 │   ├── template.py          # 交易模板 + 一键录入
 │   ├── export.py            # Excel 导出 (openpyxl)
-│   └── backup.py            # 数据库备份/还原
+│   ├── backup.py            # 数据库备份/还原
+│   └── ai_suggest.py        # AI 预算建议 (DeepSeek API)
 ├── ui/
 │   ├── theme.py             # 深色主题 QSS 样式表
 │   ├── main_window.py       # 主窗口框架（侧边导航 + QStackedWidget）
@@ -39,7 +40,8 @@ Accounting/
 │   ├── budget_panel.py      # 预算管理（总预算 + 分项进度条）
 │   ├── reminder_panel.py    # 账单提醒（到期检测 + 列表管理）
 │   ├── template_panel.py    # 交易模板（列表 + 一键录入 + CRUD）
-│   └── settings_dialog.py   # 设置（Excel 导出 + 备份/还原）
+│   ├── settings_dialog.py   # 设置（Excel 导出 + 备份/还原）
+│   └── ai_panel.py          # AI 预算建议（DeepSeek 集成）
 ├── design/
 │   └── prototype.html       # 高保真 UI 设计原型
 ├── test_phase2.py           # 阶段 2 功能测试
@@ -126,7 +128,7 @@ uv run python main.py
 | 5 | ✅ 完成 | 统计仪表盘 |
 | 6 | ✅ 完成 | 预算 + 账单提醒 |
 | 7 | ✅ 完成 | 模板 + 导出 + 备份 |
-| 8 | ⬜ 待做 | AI 预算建议（可选） |
+| 8 | ✅ 完成 | AI 预算建议 (DeepSeek API) |
 
 ## GUI 界面 (阶段 4+)
 
@@ -173,6 +175,14 @@ uv run python main.py
 - **数据库备份**: 一键备份到 backups/ 目录（WAL checkpoint）
 - **数据库还原**: 选择备份文件 → 安全确认 → 自动先备份当前库再还原
 - **备份列表**: 显示历史备份文件名 / 大小 / 时间
+
+### AI 预算建议 (阶段 8)
+- **数据聚合**: 本地聚合近 3 个月收支摘要（仅发送几百 tokens，成本极低）
+- **DeepSeek API**: 兼容 OpenAI 格式，`deepseek-chat` 模型
+- **自定义提示词**: 内置专业理财顾问提示词，可自由编辑 + 一键恢复默认
+- **后台线程**: 避免阻塞 UI，加载时显示进度条
+- **Markdown 展示**: 结果以富文本呈现（整体评估 + 分类建议 + 优化方向 + 预算模板表）
+- **API Key 管理**: 支持环境变量 `DEEPSEEK_API_KEY` + 界面输入 + 密码隐藏
 
 ### 深色主题设计
 - 背景 `#1a1a2e` / 侧边栏 `#0f0f23` / 卡片 `#16213e`
