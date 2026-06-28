@@ -14,6 +14,7 @@ SPEC.md
 accounting.db
 *.db
 backups/
+APIKey.txt
 
 # Screenshots
 *.png

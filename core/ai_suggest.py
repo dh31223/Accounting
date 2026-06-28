@@ -8,11 +8,52 @@
 import os
 import json
 from datetime import date, timedelta
+from pathlib import Path
 
 import httpx
 
 from core.statistics import StatisticsService
 from core.budget import BudgetService
+
+# 项目根目录（与 db/connection.py 保持一致）
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+_API_KEY_FILE = _PROJECT_ROOT / "APIKey.txt"
+
+
+def load_api_key() -> str:
+    """加载 API Key。
+
+    优先级：
+    1. 环境变量 DEEPSEEK_API_KEY
+    2. 项目根目录下的 APIKey.txt 文件
+
+    Returns:
+        API Key 字符串，未找到时返回空字符串
+    """
+    # 优先读环境变量
+    env_key = os.environ.get("DEEPSEEK_API_KEY", "")
+    if env_key:
+        return env_key
+
+    # 从 APIKey.txt 读取
+    try:
+        if _API_KEY_FILE.exists():
+            content = _API_KEY_FILE.read_text(encoding="utf-8").strip()
+            if content:
+                return content
+    except Exception:
+        pass
+
+    return ""
+
+
+def save_api_key(key: str) -> None:
+    """将 API Key 保存到项目根目录的 APIKey.txt 文件。
+
+    Args:
+        key: API Key 字符串
+    """
+    _API_KEY_FILE.write_text(key.strip(), encoding="utf-8")
 
 DEEPSEEK_API = "https://api.deepseek.com/v1/chat/completions"
 DEFAULT_MODEL = "deepseek-chat"

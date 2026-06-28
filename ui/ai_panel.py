@@ -16,7 +16,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, pyqtSignal, QObject
 
-from core.ai_suggest import get_suggestions_sync, DEFAULT_SYSTEM_PROMPT
+from core.ai_suggest import get_suggestions_sync, DEFAULT_SYSTEM_PROMPT, load_api_key, save_api_key
 
 
 class AIWorker(QObject):
@@ -72,10 +72,10 @@ class AIPanel(QWidget):
         self._api_key_input = QLineEdit()
         self._api_key_input.setEchoMode(QLineEdit.EchoMode.Password)
         self._api_key_input.setPlaceholderText("sk-...")
-        # 优先读环境变量
-        env_key = os.environ.get("DEEPSEEK_API_KEY", "")
-        if env_key:
-            self._api_key_input.setText(env_key)
+        # 自动加载：环境变量 > APIKey.txt
+        saved_key = load_api_key()
+        if saved_key:
+            self._api_key_input.setText(saved_key)
         key_layout.addWidget(self._api_key_input, stretch=1)
 
         save_key_btn = QPushButton("保存")
@@ -141,11 +141,12 @@ class AIPanel(QWidget):
         layout.addWidget(self._result_view, stretch=1)
 
     def _save_key(self):
-        """保存 API Key 到环境变量（会话级别）。"""
+        """保存 API Key 到 APIKey.txt（持久化）。"""
         key = self._api_key_input.text().strip()
         if key:
+            save_api_key(key)
             os.environ["DEEPSEEK_API_KEY"] = key
-            QMessageBox.information(self, "已保存", "API Key 已保存（本次会话有效）")
+            QMessageBox.information(self, "已保存", "API Key 已保存到 APIKey.txt，下次启动自动加载")
         else:
             QMessageBox.warning(self, "提示", "请输入有效的 API Key")
 
