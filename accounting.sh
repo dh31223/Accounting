@@ -1,6 +1,7 @@
 #!/bin/bash
 # Accounting — 个人记账软件 启动脚本
-APP_DIR="/home/havenlynx/桌面/Accounting"
+# 自动检测脚本所在目录，移动到任何位置都不影响启动
+APP_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$APP_DIR"
 
 # 确保 fcitx 输入法可用
