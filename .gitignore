@@ -15,6 +15,7 @@ accounting.db
 *.db
 backups/
 APIKey.txt
+Accounting/
 
 # Screenshots
 *.png

@@ -111,7 +111,12 @@ sudo apt-get install -y python3-pyqt6 python3-pyqt6.qtcharts \
 # 2. 创建虚拟环境（需访问系统包）
 uv venv --system-site-packages
 
-# 3. 运行
+# 3. （可选）配置 AI 预算建议功能
+cp APIKey.txt.example APIKey.txt
+# 编辑 APIKey.txt，填入你的 DeepSeek API Key（https://platform.deepseek.com）
+# 或者设置环境变量: export DEEPSEEK_API_KEY="sk-..."
+
+# 4. 运行
 uv run python main.py
 
 # 首次运行会自动创建 accounting.db 并插入预设分类
