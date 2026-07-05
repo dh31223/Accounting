@@ -21,11 +21,20 @@ from matplotlib.figure import Figure
 from core.statistics import StatisticsService
 from db.schema import get_all_categories
 
-# ---- matplotlib 中文字体设置 ----
+# ---- matplotlib 中文字体设置（跨平台） ----
+import sys as _sys
 import matplotlib.font_manager as fm
+
+# 按平台优先级排列：Windows 优先微软雅黑，Linux 优先 Noto/WenQuanYi
+if _sys.platform == "win32":
+    _FONT_CANDIDATES = ["Microsoft YaHei", "SimHei", "KaiTi", "FangSong",
+                        "Noto Sans CJK SC", "WenQuanYi Micro Hei", "sans-serif"]
+else:
+    _FONT_CANDIDATES = ["Noto Sans CJK SC", "WenQuanYi Micro Hei", "WenQuanYi Zen Hei",
+                        "Microsoft YaHei", "SimHei", "AR PL UMing CN", "sans-serif"]
+
 _CN_FONT = None
-for name in ["Noto Sans CJK SC", "WenQuanYi Micro Hei", "WenQuanYi Zen Hei",
-             "Microsoft YaHei", "SimHei", "AR PL UMing CN", "sans-serif"]:
+for name in _FONT_CANDIDATES:
     for f in fm.fontManager.ttflist:
         if name.lower() in f.name.lower():
             _CN_FONT = f.name

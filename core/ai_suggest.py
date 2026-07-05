@@ -6,6 +6,7 @@
 """
 
 import os
+import sys
 import json
 from datetime import date, timedelta
 from pathlib import Path
@@ -15,9 +16,17 @@ import httpx
 from core.statistics import StatisticsService
 from core.budget import BudgetService
 
-# 项目根目录（与 db/connection.py 保持一致）
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
-_API_KEY_FILE = _PROJECT_ROOT / "APIKey.txt"
+
+def _get_api_key_path() -> Path:
+    """获取 APIKey.txt 路径（兼容 PyInstaller 打包）。"""
+    if getattr(sys, 'frozen', False):
+        # 打包后：与数据库同目录
+        from db.connection import DB_PATH
+        return DB_PATH.parent / "APIKey.txt"
+    return Path(__file__).resolve().parent.parent / "APIKey.txt"
+
+
+_API_KEY_FILE = _get_api_key_path()
 
 
 def load_api_key() -> str:

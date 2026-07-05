@@ -1,0 +1,54 @@
+name: Build Windows Installer
+
+# 当推送代码到 main/master 分支，或手动触发时，自动构建 Windows 安装包
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:  # 允许在 GitHub 网页上手动点击运行
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # 1. 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. 安装 Python
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 3. 安装 Python 依赖
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller Pillow
+
+      # 4. 生成应用图标
+      - name: Generate app icon
+        run: python installer/generate_icon.py
+
+      # 5. PyInstaller 打包
+      - name: Build with PyInstaller
+        run: pyinstaller installer/Accounting.spec
+
+      # 6. 安装 Inno Setup
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress --yes
+        # Inno Setup 会被安装到 C:\Program Files (x86)\Inno Setup 6\
+
+      # 7. 用 Inno Setup 生成安装包
+      - name: Create installer
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\installer.iss
+
+      # 8. 上传安装包（可在 GitHub Actions 页面下载）
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Accounting-Setup
+          path: installer/Output/Accounting-Setup-*.exe
+          if-no-files-found: error

@@ -5,7 +5,8 @@ description = "个人记账软件 — 支持收支记录、统计分析、预算
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    # 以下依赖由系统 apt 包提供（与 fcitx Qt6 插件共用 Qt 6.4）:
-    #   python3-pyqt6 python3-pyqt6.qtcharts python3-matplotlib python3-openpyxl python3-httpx
-    # venv 使用 --system-site-packages 访问系统包
+    "PyQt6>=6.5",
+    "matplotlib>=3.7",
+    "openpyxl>=3.1",
+    "httpx>=0.25",
 ]

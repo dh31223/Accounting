@@ -31,5 +31,10 @@ Accounting/
 # Design prototypes
 design/
 
+# Inno Setup / Installer artifacts
+installer/app.ico
+installer/Output/
+*.exe
+
 # Test scripts
 test_*.py

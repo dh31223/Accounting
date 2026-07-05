@@ -1,0 +1,10 @@
+# Accounting — 个人记账软件 依赖
+# 安装: pip install -r requirements.txt
+#
+# 注意: Python 3.12+ 需要 Visual C++ Redistributable (Windows)
+# 推荐从 python.org 下载官方 Python 安装包（已包含）
+
+PyQt6>=6.5
+matplotlib>=3.7
+openpyxl>=3.1
+httpx>=0.25

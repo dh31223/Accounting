@@ -4,12 +4,33 @@
 """
 
 import sqlite3
+import sys
 import os
 from pathlib import Path
 
-# 数据库文件路径：项目根目录下的 accounting.db
-DB_DIR = Path(__file__).resolve().parent.parent
-DB_PATH = DB_DIR / "accounting.db"
+
+def _get_db_path() -> Path:
+    """获取数据库文件路径。
+
+    - 开发模式: 项目根目录下的 accounting.db
+    - PyInstaller 打包后 (Windows): %APPDATA%/Accounting/accounting.db
+    - PyInstaller 打包后 (Linux): ~/.local/share/Accounting/accounting.db
+    """
+    if getattr(sys, 'frozen', False):
+        # PyInstaller 打包后 — 使用用户数据目录
+        if sys.platform == "win32":
+            data_dir = Path(os.environ.get("APPDATA", "")) / "Accounting"
+        else:
+            data_dir = Path.home() / ".local" / "share" / "Accounting"
+        data_dir.mkdir(parents=True, exist_ok=True)
+        return data_dir / "accounting.db"
+    else:
+        # 开发模式 — 项目根目录
+        return Path(__file__).resolve().parent.parent / "accounting.db"
+
+
+# 数据库文件路径
+DB_PATH = _get_db_path()
 
 
 def get_connection() -> sqlite3.Connection:
